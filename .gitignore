@@ -137,3 +137,4 @@ lint_output.json
 tsconfig.node.json
 harvestlink-web/build_errors.txt
 harvestlink-mobile
+harvestlink-mobile/app/(tabs)/index.tsx
