@@ -1,0 +1,25 @@
+==================================================
+HARVESTLINK ML MODEL EVALUATION REPORT
+==================================================
+
+[MODEL 1: Crop Recommendation]
+Accuracy:  0.9625
+Precision: 0.9669
+F1-Score:  0.9630
+
+[MODEL 2: Demand & Price Forecast]
+Demand R2 Score: 0.9952
+Price R2 Score:  0.9924
+
+[MODEL 3: Price Crash Alert]
+Accuracy:  0.8933
+Precision: 1.0000
+Recall:    0.0588
+F1-Score:  0.1111
+
+[MODEL 4: Spoilage Risk]
+Accuracy:  0.9150
+Precision: 0.9016
+F1-Score:  0.8907
+
+==================================================

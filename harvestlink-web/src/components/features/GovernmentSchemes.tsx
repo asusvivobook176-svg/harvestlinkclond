@@ -55,12 +55,12 @@ export const GovernmentSchemes: React.FC = () => {
                 </h2>
                 <p className="text-gray-500 text-sm mb-8">Access critical subsidies and financial support programs tailored for your farm.</p>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {schemes.map(scheme => (
                         <motion.div
                             key={scheme.id}
                             whileHover={{ y: -5 }}
-                            className="group p-6 rounded-2xl border-2 border-gray-50 hover:border-emerald-100 bg-gray-50/30 hover:bg-white transition-all cursor-pointer hover:shadow-xl"
+                            className="group p-4 rounded-xl border border-gray-100 hover:border-emerald-100 bg-gray-50/20 hover:bg-white transition-all cursor-pointer hover:shadow-lg"
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-black text-gray-900 leading-tight group-hover:text-emerald-700 transition-colors">
@@ -97,9 +97,9 @@ export const GovernmentSchemes: React.FC = () => {
                                 href={scheme.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="mt-6 block w-full text-center py-3 rounded-xl bg-white border border-gray-200 text-sm font-black text-gray-900 hover:bg-emerald-600 hover:text-white hover:border-transparent transition-all shadow-sm"
+                                className="mt-4 block w-full text-center py-2 rounded-lg bg-white border border-gray-100 text-[10px] font-black text-gray-900 hover:bg-emerald-600 hover:text-white hover:border-transparent transition-all shadow-sm"
                             >
-                                Apply Now
+                                Apply Now →
                             </a>
                         </motion.div>
                     ))}

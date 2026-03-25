@@ -1,116 +1,205 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, Check, Info, AlertTriangle, TrendingDown, Target } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { 
+    Bell, 
+    X, 
+    CheckCircle2, 
+    AlertCircle, 
+    Info, 
+    Clock, 
+    ChevronRight,
+    Trash2,
+    Settings,
+    MoreHorizontal
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "../../lib/utils";
 
-interface Notification {
-    id: number;
+export type NotificationType = "success" | "warning" | "info" | "urgent";
+
+export interface Notification {
+    id: string;
     title: string;
     message: string;
-    notification_type: 'price_alert' | 'spoilage_warning' | 'demand_update' | 'recommendation';
-    is_read: boolean;
-    created_at: string;
+    type: NotificationType;
+    timestamp: string;
+    read: boolean;
+    category?: string;
 }
 
-export const NotificationCenter: React.FC = () => {
-    const { t } = useTranslation();
-    const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
+interface NotificationCenterProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
 
-    // In a real app, user_id would come from auth context
-    const userId = 1;
-
-    useEffect(() => {
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    const fetchNotifications = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/notifications/${userId}`);
-            const data = await response.json();
-            setNotifications(data);
-            setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
-        } catch (error) {
-            console.error("Error fetching notifications:", error);
+export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
+    const [notifications, setNotifications] = useState<Notification[]>([
+        {
+            id: "1",
+            title: "New Demand Match",
+            message: "A farmer near Salem has tomatoes available that match your demand.",
+            type: "success",
+            timestamp: new Date().toISOString(),
+            read: false,
+            category: "Procurement"
+        },
+        {
+            id: "2",
+            title: "Price Alert: Tomato",
+            message: "Market prices for tomatoes are expected to drop by 15% next week.",
+            type: "warning",
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            read: false,
+            category: "Intelligence"
+        },
+        {
+            id: "3",
+            title: "Verification Successful",
+            message: "Your business profile has been verified. You now have the 'Trusted Trader' badge.",
+            type: "info",
+            timestamp: new Date(Date.now() - 86400000).toISOString(),
+            read: true,
+            category: "Account"
         }
+    ]);
+
+    const markAllRead = () => {
+        setNotifications(notifications.map(n => ({ ...n, read: true })));
     };
 
-    const markAsRead = async (id: number) => {
-        try {
-            await fetch(`http://localhost:5000/api/notifications/read/${id}`, { method: 'POST' });
-            setNotifications(notifications.map(n => n.id === id ? { ...n, is_read: true } : n));
-            setUnreadCount(prev => Math.max(0, prev - 1));
-        } catch (error) {
-            console.error("Error marking as read:", error);
-        }
-    };
-
-    const getIcon = (type: string) => {
-        switch (type) {
-            case 'price_alert': return <TrendingDown className="text-red-500 w-5 h-5" />;
-            case 'spoilage_warning': return <AlertTriangle className="text-orange-500 w-5 h-5" />;
-            case 'demand_update': return <Target className="text-blue-500 w-5 h-5" />;
-            case 'recommendation': return <Info className="text-green-500 w-5 h-5" />;
-            default: return <Bell className="text-gray-500 w-5 h-5" />;
-        }
+    const deleteNotification = (id: string) => {
+        setNotifications(notifications.filter(n => n.id !== id));
     };
 
     return (
-        <div className="relative">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 text-gray-400 hover:text-white transition-colors duration-200"
-            >
-                <Bell className="w-6 h-6" />
-                {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                        {unreadCount}
-                    </span>
-                )}
-            </button>
-
+        <AnimatePresence>
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-4 border-b border-slate-800 flex justify-between items-center">
-                        <h3 className="text-sm font-semibold text-white">{t('notifications')}</h3>
-                        <span className="text-xs text-slate-500">{unreadCount} unread</span>
-                    </div>
-                    <div className="max-h-96 overflow-y-auto">
-                        {notifications.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500">
-                                <p className="text-sm">No notifications yet</p>
-                            </div>
-                        ) : (
-                            notifications.map((n) => (
-                                <div
-                                    key={n.id}
-                                    className={`p-4 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer ${!n.is_read ? 'bg-blue-500/5' : ''}`}
-                                    onClick={() => !n.is_read && markAsRead(n.id)}
-                                >
-                                    <div className="flex gap-3">
-                                        <div className="mt-1">{getIcon(n.notification_type)}</div>
-                                        <div className="flex-1">
-                                            <div className="flex justify-between">
-                                                <p className={`text-sm font-medium ${!n.is_read ? 'text-white' : 'text-slate-300'}`}>{n.title}</p>
-                                                {!n.is_read && <Check className="w-4 h-4 text-blue-500" />}
-                                            </div>
-                                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">{n.message}</p>
-                                            <p className="text-[10px] text-slate-600 mt-2">
-                                                {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </p>
-                                        </div>
-                                    </div>
+                <>
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 lg:hidden"
+                    />
+                    <motion.div 
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-slate-100 shadow-2xl z-50 flex flex-col"
+                    >
+                        {/* Header */}
+                        <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-blue-50 rounded-xl relative">
+                                    <Bell className="w-5 h-5 text-blue-600" />
+                                    {notifications.some(n => !n.read) && (
+                                        <span className="absolute top-0 right-0 w-3 h-3 bg-rose-500 border-2 border-white rounded-full" />
+                                    )}
                                 </div>
-                            ))
-                        )}
-                    </div>
-                    <div className="p-3 bg-slate-800/50 text-center">
-                        <button className="text-xs text-blue-400 hover:text-blue-300 font-medium">View all activity</button>
-                    </div>
-                </div>
+                                <div>
+                                    <h2 className="text-xl font-black text-slate-900 leading-tight">Notifications</h2>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{notifications.filter(n => !n.read).length} Unread Messages</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                                    <Settings className="w-5 h-5" />
+                                </button>
+                                <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 transition-colors bg-slate-50 rounded-lg">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-50 flex items-center justify-between gap-4">
+                            <button onClick={markAllRead} className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors">
+                                Mark all as read
+                            </button>
+                            <button className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors">
+                                <MoreHorizontal className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* List */}
+                        <div className="flex-1 overflow-y-auto">
+                            {notifications.length > 0 ? (
+                                <div className="divide-y divide-slate-50">
+                                    {notifications.map((n) => (
+                                        <NotificationItem 
+                                            key={n.id} 
+                                            notification={n} 
+                                            onDelete={() => deleteNotification(n.id)} 
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full p-12 text-center">
+                                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                                        <Bell className="w-10 h-10 text-slate-200" />
+                                    </div>
+                                    <h3 className="text-lg font-black text-slate-400">All caught up!</h3>
+                                    <p className="text-sm text-slate-400 font-medium">We'll notify you when something important happens.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 bg-slate-50/50 border-t border-slate-50">
+                            <button className="w-full bg-white border border-slate-200 py-3 rounded-2xl text-xs font-black text-slate-600 uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                                Clear History <Trash2 className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </motion.div>
+                </>
             )}
-        </div>
+        </AnimatePresence>
     );
-};
+}
+
+function NotificationItem({ notification: n, onDelete }: { notification: Notification; onDelete: () => void }) {
+    return (
+        <motion.div 
+            layout
+            className={cn(
+                "p-6 relative group transition-all",
+                !n.read ? "bg-blue-50/30" : "bg-white hover:bg-slate-50/50"
+            )}
+        >
+            <div className="flex gap-4">
+                <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                    n.type === "success" ? "bg-emerald-50 text-emerald-600" :
+                    n.type === "warning" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
+                )}>
+                    {n.type === "success" ? <CheckCircle2 className="w-5 h-5" /> : 
+                     n.type === "warning" ? <AlertCircle className="w-5 h-5" /> : <Info className="w-5 h-5" />}
+                </div>
+                <div className="flex-1 space-y-1">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{n.category || "Alert"}</span>
+                        <div className="flex items-center gap-1 text-[10px] text-slate-300 font-bold">
+                            <Clock className="w-3 h-3" />
+                            <span>Just now</span>
+                        </div>
+                    </div>
+                    <h4 className={cn("text-sm font-black", n.read ? "text-slate-600" : "text-slate-900")}>{n.title}</h4>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{n.message}</p>
+                </div>
+            </div>
+            
+            <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                <button 
+                    onClick={onDelete}
+                    className="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
+                <button className="p-1.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all">
+                    <ChevronRight className="w-4 h-4" />
+                </button>
+            </div>
+        </motion.div>
+    );
+}

@@ -60,6 +60,27 @@ export interface CropListing {
     created_at: string;
 }
 
+export type CropGrowthStage = "Sowing" | "Vegetative" | "Flowering" | "Fruition" | "Harvesting";
+export type CropHealth = "Excellent" | "Good" | "Fair" | "Poor" | "Critical";
+
+export interface FarmerCrop {
+    id: string;
+    farmer_id: string;
+    crop_name: string;
+    variety: string | null;
+    area_acres: number | null;
+    sown_date: string;
+    expected_harvest_date: string | null;
+    growth_stage: CropGrowthStage;
+    health_score: number; // 0-100
+    estimated_yield_kg: number | null;
+    soil_moisture: number | null;
+    temperature: number | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface DemandPost {
     id: string;
     shop_id: string;

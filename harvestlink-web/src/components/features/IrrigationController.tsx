@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Droplets, Power, Timer, Zap, Leaf } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface IrrigationSchedule {
     day: string;
@@ -10,6 +11,7 @@ interface IrrigationSchedule {
 }
 
 export const IrrigationController: React.FC = () => {
+    const { t } = useTranslation();
     const [isAutomatic, setIsAutomatic] = useState(true);
     const [irrigationSchedule] = useState<IrrigationSchedule[]>([
         { day: 'Monday', waterRequired: 25, time: '06:00 AM', durationMins: 30 },
@@ -23,9 +25,9 @@ export const IrrigationController: React.FC = () => {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-2xl font-black flex items-center gap-2">
-                            <Droplets className="w-6 h-6 text-cyan-300" /> Smart Irrigation System
+                            <Droplets className="w-6 h-6 text-cyan-300" /> {t('irrigation.title', 'Smart Irrigation System')}
                         </h2>
-                        <p className="text-cyan-100/60 text-sm mt-1">AI-driven precision water management and automation.</p>
+                        <p className="text-cyan-100/60 text-sm mt-1">{t('irrigation.subtitle', 'AI-driven precision water management and automation.')}</p>
                     </div>
                     <button
                         onClick={() => setIsAutomatic(!isAutomatic)}

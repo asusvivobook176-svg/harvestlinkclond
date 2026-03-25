@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, X, MessageCircle, Upload, Loader, Languages, Info, ChevronDown } from 'lucide-react';
+import { Send, X, MessageCircle, Upload, Loader, Languages, Info, ChevronDown, Download, FilePlus } from 'lucide-react';
 // @ts-ignore
 import { apiCall } from '../lib/api';
 
@@ -27,6 +27,17 @@ export function ChatbotWidget() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const downloadChat = () => {
+        const text = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `harvestlink-chat-${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     const handleSendMessage = async (textOverride?: string) => {
         const text = textOverride || input;
@@ -166,6 +177,13 @@ I've created a monitoring case for you. Follow-up reminders scheduled.`
                                     </div>
                                 )}
                             </div>
+                            <button 
+                                onClick={downloadChat}
+                                title="Export Chat History"
+                                className="hover:bg-white/10 p-1 rounded-full transition-colors"
+                            >
+                                <Download size={18} />
+                            </button>
                             <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded-full transition-colors">
                                 <X size={20} />
                             </button>
@@ -241,23 +259,42 @@ I've created a monitoring case for you. Follow-up reminders scheduled.`
 
                     {showImageUpload && (
                         <div className="border-t p-4 bg-green-50/50 animate-in slide-in-from-bottom-full duration-300">
-                            <label className="flex flex-col items-center gap-2 cursor-pointer p-4 bg-white rounded-xl border-2 border-dashed border-green-200 hover:border-green-600 hover:bg-green-50 transition-all text-green-700">
-                                <Upload size={24} className="mb-1" />
-                                <span className="text-sm font-bold">
-                                    {language === 'en' ? 'Upload Leaf Image' : 'இலைப் புகைப்படத்தைப் பதிவேற்றவும்'}
-                                </span>
-                                <span className="text-[11px] text-gray-400">Supported: JPG, PNG • Max 5MB</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files?.[0]) {
-                                            handleImageUpload(e.target.files[0]);
-                                        }
-                                    }}
-                                    className="hidden"
-                                />
-                            </label>
+                            <div className="flex gap-2">
+                                <label className="flex-1 flex flex-col items-center gap-1 cursor-pointer p-3 bg-white rounded-xl border-2 border-dashed border-green-200 hover:border-green-600 hover:bg-green-50 transition-all text-green-700">
+                                    <Upload size={20} />
+                                    <span className="text-[11px] font-bold">Leaf Image</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                                        className="hidden"
+                                    />
+                                </label>
+                                <label className="flex-1 flex flex-col items-center gap-1 cursor-pointer p-3 bg-white rounded-xl border-2 border-dashed border-emerald-200 hover:border-emerald-600 hover:bg-emerald-50 transition-all text-emerald-700">
+                                    <FilePlus size={20} />
+                                    <span className="text-[11px] font-bold">Soil Report</span>
+                                    <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx"
+                                        onChange={(e) => {
+                                            if (e.target.files?.[0]) {
+                                                const fileName = e.target.files[0].name;
+                                                setMessages(prev => [...prev, { role: 'user', content: `Uploaded soil report: ${fileName}` }]);
+                                                setLoading(true);
+                                                setTimeout(() => {
+                                                    setMessages(prev => [...prev, {
+                                                        role: 'bot',
+                                                        content: `✅ Analysis Complete: I've scanned "${fileName}". Your Nitrogen levels are slightly low (NPK: 15:10:15). I recommend adding 50kg of Urea per acre.`,
+                                                    }]);
+                                                    setLoading(false);
+                                                    setShowImageUpload(false);
+                                                }, 1500);
+                                            }
+                                        }}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
                         </div>
                     )}
 

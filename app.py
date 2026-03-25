@@ -15,6 +15,7 @@ from backend.routes.payment_routes import payment_bp
 from backend.routes.chatbot_routes import chatbot_bp
 from backend.routes.disease_routes import disease_bp
 from backend.routes.market_chatbot_routes import market_chatbot_bp
+from backend.routes.ml_monitor_routes import ml_monitor_bp
 from backend.api_docs import api_bp
 from backend.ml_service import get_ml_service
 from backend.logging_config import setup_logging
@@ -66,6 +67,7 @@ app.register_blueprint(payment_bp, url_prefix='/api/payment')
 app.register_blueprint(chatbot_bp)
 app.register_blueprint(disease_bp)
 app.register_blueprint(market_chatbot_bp, url_prefix='/api/market-chatbot')
+app.register_blueprint(ml_monitor_bp, url_prefix='/api/ml')
 app.register_blueprint(api_bp, url_prefix='/docs')
 
 @app.route('/api/health', methods=['GET'])
@@ -76,10 +78,14 @@ def health_check():
 def model_info():
     return jsonify({
         "models": [
-            {"name": "Crop Recommendation", "accuracy": "94.5%", "algorithm": "Random Forest"},
-            {"name": "Market Demand", "score": "99.5%", "algorithm": "Random Forest Regressor"},
-            {"name": "Price Crash", "recall": "91%", "algorithm": "Random Forest Classifier"},
-            {"name": "Spoilage Risk", "score": "95%", "algorithm": "Random Forest"}
+            {"id": "1", "name": "Crop Recommendation", "accuracy": "96.25%", "algorithm": "Random Forest Classifier"},
+            {"id": "2", "name": "Market Demand", "score": "R²=0.9952", "algorithm": "LSTM + RF Regressor"},
+            {"id": "3", "name": "Price Crash Alert", "accuracy": "89.33%", "algorithm": "Random Forest Classifier"},
+            {"id": "4", "name": "Spoilage Risk", "accuracy": "91.50%", "algorithm": "RF Classifier + Regressor"},
+            {"id": "5", "name": "Profit Prediction", "score": "R²=0.97", "algorithm": "XGBoost"},
+            {"id": "6", "name": "Yield Prediction", "score": "R²=0.9706", "algorithm": "Random Forest Regressor"},
+            {"id": "7", "name": "Crop Failure Risk", "accuracy": "93%", "algorithm": "SMOTE + Random Forest"},
+            {"id": "8", "name": "Risk Scoring", "accuracy": "91%", "algorithm": "Composite Model"}
         ]
     })
 

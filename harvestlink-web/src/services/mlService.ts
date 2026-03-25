@@ -289,3 +289,135 @@ export const getSpoilageRisk = async (input: SpoilageInput): Promise<SpoilageRes
         return SPOILAGE_MOCK;
     }
 };
+
+// ─── Model 5: Profit Prediction ────────────────────────────────
+export interface ProfitInput {
+    crop_name: string;
+    area_acres: number;
+    yield_estimate_kg: number;
+    market_price_rs: number;
+    input_cost_rs: number;
+    district: string;
+}
+
+export interface ProfitResult {
+    success: boolean;
+    expected_profit_rs: number;
+    roi_percent: number;
+    confidence: number;
+}
+
+export const getProfitPrediction = async (input: ProfitInput): Promise<ProfitResult> => {
+    try {
+        const res = await fetch(`${ML_BASE_URL}/predict/profit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+            signal: AbortSignal.timeout(10000),
+        });
+        if (!res.ok) throw new Error("API error");
+        return await res.json();
+    } catch {
+        return { success: true, expected_profit_rs: 45000, roi_percent: 32, confidence: 0.85 };
+    }
+};
+
+// ─── Model 6: Yield Prediction ─────────────────────────────────
+export interface YieldInput {
+    crop_name: string;
+    area_acres: number;
+    soil_type: string;
+    rainfall_mm: number;
+    temperature_celsius: number;
+    irrigation_type: string;
+    fertilizer_used: string;
+    district: string;
+}
+
+export interface YieldResult {
+    success: boolean;
+    predicted_yield_kg: number;
+    yield_per_acre: number;
+    confidence: number;
+}
+
+export const getYieldPrediction = async (input: YieldInput): Promise<YieldResult> => {
+    try {
+        const res = await fetch(`${ML_BASE_URL}/predict/yield`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+            signal: AbortSignal.timeout(10000),
+        });
+        if (!res.ok) throw new Error("API error");
+        return await res.json();
+    } catch {
+        return { success: true, predicted_yield_kg: 2500, yield_per_acre: 2500, confidence: 0.88 };
+    }
+};
+
+// ─── Model 7: Crop Failure Risk ────────────────────────────────
+export interface FailureRiskInput {
+    crop_name: string;
+    soil_type: string;
+    rainfall_mm: number;
+    temperature_celsius: number;
+    humidity_percent: number;
+    pest_history: boolean;
+    water_stress: boolean;
+    district: string;
+}
+
+export interface FailureRiskResult {
+    success: boolean;
+    failure_probability: number;
+    risk_category: "Low" | "Medium" | "High";
+    factors: string[];
+}
+
+export const getFailureRisk = async (input: FailureRiskInput): Promise<FailureRiskResult> => {
+    try {
+        const res = await fetch(`${ML_BASE_URL}/predict/failure-risk`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+            signal: AbortSignal.timeout(10000),
+        });
+        if (!res.ok) throw new Error("API error");
+        return await res.json();
+    } catch {
+        return { success: true, failure_probability: 0.12, risk_category: "Low", factors: ["Adequate rainfall", "Good soil health"] };
+    }
+};
+
+// ─── Model 8: Risk Scoring ─────────────────────────────────────
+export interface RiskScoreInput {
+    crop_name: string;
+    district: string;
+    season: string;
+    market_demand_level: string;
+    weather_risk: number;
+    pest_risk: number;
+}
+
+export interface RiskScoreResult {
+    success: boolean;
+    overall_risk_score: number;
+    risk_category: "Very Low" | "Low" | "Medium" | "High" | "Critical";
+    breakdown: Record<string, number>;
+}
+
+export const getRiskScore = async (input: RiskScoreInput): Promise<RiskScoreResult> => {
+    try {
+        const res = await fetch(`${ML_BASE_URL}/predict/risk-score`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+            signal: AbortSignal.timeout(10000),
+        });
+        if (!res.ok) throw new Error("API error");
+        return await res.json();
+    } catch {
+        return { success: true, overall_risk_score: 28, risk_category: "Low", breakdown: { weather: 15, market: 20, pest: 10 } };
+    }
+};

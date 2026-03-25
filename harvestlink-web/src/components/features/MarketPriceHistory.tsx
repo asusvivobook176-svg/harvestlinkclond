@@ -1,6 +1,7 @@
 import React from 'react';
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Maximize2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const data = [
     { month: 'Sep', price: 45, avg: 40 },
@@ -12,15 +13,17 @@ const data = [
 ];
 
 export const MarketPriceHistory: React.FC = () => {
+    const { t } = useTranslation();
+
     return (
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             <div className="p-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
-                            <TrendingUp className="w-6 h-6 text-emerald-600" /> Market Price Laboratory
+                            <TrendingUp className="w-6 h-6 text-emerald-600" /> {t('market_price.title', 'Market Price Laboratory')}
                         </h2>
-                        <p className="text-gray-500 text-sm mt-1">Advanced price trends, forecasting, and historical benchmarks.</p>
+                        <p className="text-gray-500 text-sm mt-1">{t('market_price.subtitle', 'Advanced price trends, forecasting, and historical benchmarks.')}</p>
                     </div>
                     <div className="flex gap-2">
                         <button className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-emerald-600 hover:bg-white transition-all shadow-sm">

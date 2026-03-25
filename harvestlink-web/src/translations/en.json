@@ -7,12 +7,75 @@
         "quality": "Spoilage Check",
         "inventory": "My Demands",
         "alerts": "Price Alerts",
+        "weather": "Weather Alerts",
+        "ai_tools": "AI Tools & Vault",
         "settings": "Settings",
         "profile": "My Profile",
         "logout": "Logout",
+        "community_feedback": "Community & Feedback",
         "signing_out": "Signing out...",
         "pilot_monitoring": "Pilot Monitoring",
-        "training_portal": "Training Portal"
+        "training_portal": "Training Portal",
+        "crop_calendar": "Smart Crop Calendar",
+        "activity_log": "Activity Log",
+        "soil_lab": "Soil Health Lab"
+    },
+    "crop_calendar": {
+        "title": "Smart Crop Calendar",
+        "subtitle": "Plan your entire year with AI-powered crop lifecycle planning",
+        "select_crop": "Select Your Crop:",
+        "eppo_system": "Eppo System: Seed → Growth → Harvest → Sell",
+        "view_gantt": "Gantt View",
+        "view_calendar": "Monthly Calendar",
+        "view_details": "Activity Log",
+        "activity_log": "Activity Log",
+        "view_financial": "Financial",
+        "view_strategy": "AI Strategy",
+        "view_notes": "My Notes",
+        "add_note": "Add Activity Note",
+        "edit_activity": "Edit Activity",
+        "save_note": "Save to Dashboard",
+        "placeholder_note": "Write down your farm activity or observation...",
+        "get_app_cta": "Get Full Crop Calendar on App",
+        "phases": {
+            "seed": "Eppo Seed",
+            "growth": "Eppo Podanum",
+            "harvest": "Eppo Harvest",
+            "sell": "Eppo Sell"
+        },
+        "crops": {
+            "tomato": "Tomato (Best for Pongal)",
+            "onion": "Onion (High Demand)",
+            "chili": "Chili (Premium Price)",
+            "brinjal": "Brinjal (Good Yield)",
+            "cucumber": "Cucumber (Quick Harvest)"
+        },
+        "weather": {
+            "monsoon": "Monsoon Phase (Oct-Dec): Adequate rainfall",
+            "winter": "Winter Phase (Jan): Clear skies, optimal temps"
+        },
+        "festivals": {
+            "pongal": "PONGAL - Prime Selling Season",
+            "price_boost": "Price: ₹40-60/kg (vs normal ₹25-30/kg)"
+        },
+        "insights": {
+            "title": "AI Strategic Insights",
+            "demand": "High Demand Peak",
+            "demand_desc": "Market demand in {{district}} is predicted to outpace supply by 15% during your harvest window.",
+            "risk": "Climate Advisory",
+            "risk_desc": "Extended dry spell predicted for late Oct. Ensure irrigation systems are ready for 'Eppo Podanum' phase."
+        },
+        "inputs": {
+            "title": "Input Advisor",
+            "seeds": "Recommended Seeds",
+            "fertilizer": "Optimal Inputs",
+            "buy_now": "Source Locally"
+        },
+        "market": {
+            "matching": "Market Matching",
+            "shops_interested": "{{count}} Shops looking for your harvest",
+            "pre_book": "Pre-book Intent"
+        }
     },
     "dashboard": {
         "title": "Your Dashboard",
@@ -125,6 +188,10 @@
             "black": "Black Soil",
             "sandy": "Sandy Soil",
             "loamy": "Loamy Soil"
+        },
+        "form": {
+            "land_area": "Land Area",
+            "soil_type": "Soil Type"
         }
     },
     "price_alerts": {
@@ -370,7 +437,16 @@
         "registration_failed": "Registration failed.",
         "select_role": "Please select a role.",
         "password_min": "Password must be at least 6 characters.",
-        "password_placeholder": "Min 6 characters"
+        "password_placeholder": "Min 6 characters",
+        "water_availability": "Water Availability",
+        "irrigation_type": "Irrigation Type"
+    },
+    "register": {
+        "irrigation": {
+            "drip_desc": "Water efficient",
+            "flood_desc": "Traditional flow",
+            "rain_desc": "Rain dependent"
+        }
     },
     "common": {
         "save": "Save",
@@ -413,6 +489,9 @@
         "okra": "Okra",
         "potato": "Potato",
         "carrot": "Carrot",
+        "greens": "Greens",
+        "drumstick": "Drumstick",
+        "banana": "Banana",
         "overall_satisfaction": "Overall Satisfaction",
         "feature_ratings": "Feature Ratings",
         "accuracy_verification": "Accuracy Verification",
@@ -425,6 +504,22 @@
         "farmer_portal": "Farmer Portal",
         "shop_portal": "Shop Portal",
         "admin_portal": "Admin Portal"
+    },
+    "market_price": {
+        "title": "Market Price Laboratory",
+        "subtitle": "Advanced price trends, forecasting, and historical benchmarks."
+    },
+    "roi": {
+        "title": "Agricultural ROI Calculator",
+        "subtitle": "Calculate your expected returns and plan your investments with precision."
+    },
+    "crop_compare": {
+        "title": "Compare Strategic Crops",
+        "subtitle": "Compare yields, profits, and risk levels to make informed planting decisions."
+    },
+    "irrigation": {
+        "title": "Smart Irrigation System",
+        "subtitle": "AI-driven precision water management and automation."
     },
     "index": {
         "hero": {
@@ -533,5 +628,19 @@
         "feedback_saved": "Feedback Saved!",
         "thank_you": "Thank you for helping us build the future of Tamil Nadu agriculture. Your input is invaluable.",
         "submit_another": "Submit Another"
+    },
+    "soil_lab": {
+        "title": "Soil Health Analysis Lab",
+        "subtitle": "Scientific nutrient profiling for optimal yield",
+        "input_header": "Nutrient Data Input",
+        "diagnostic_report": "Diagnostic Report",
+        "phosphorus_focus": "Phosphorus Focus",
+        "n_impact": "Nitrogen Impact",
+        "ph_balance": "pH Balance",
+        "low_phosphorus_msg": "Mineral Phosphorus levels are low (below 60mg/kg). Root development may be stunted.",
+        "p_improvement_tip": "Apply Rock Phosphate or DAP during soil preparation. Increase organic matter to aid P-solubilization.",
+        "optimal_msg": "Nutrient levels are within optimal range for your regional soil type.",
+        "start_analysis": "Start Lab Analysis",
+        "save_report": "Save to Farm History"
     }
 }

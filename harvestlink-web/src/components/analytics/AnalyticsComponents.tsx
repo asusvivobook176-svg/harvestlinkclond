@@ -15,8 +15,7 @@ import {
     PieChart,
     Pie,
     Cell,
-    ComposedChart,
-    Scatter,
+    ComposedChart
 } from 'recharts';
 
 interface MetricCardProps {
@@ -29,18 +28,22 @@ interface MetricCardProps {
     };
     icon?: React.ReactNode;
     isDark?: boolean;
+    color?: string;
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ title, value, subtitle, trend, icon, isDark }) => (
+export const MetricCard: React.FC<MetricCardProps> = ({ title, value, subtitle, trend, icon, isDark, color }) => (
     <div className={`${isDark ? 'bg-slate-900/50 border-slate-800 hover:bg-slate-900' : 'bg-white border-slate-100'} p-6 rounded-2xl shadow-sm border flex flex-col justify-between hover:shadow-md transition-all duration-300`}>
         <div className="flex justify-between items-start">
             <div>
                 <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'} mb-1`}>{title}</p>
-                <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{value}</h3>
+                <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`} style={color ? { color } : {}}>{value}</h3>
                 {subtitle && <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'} mt-1 uppercase tracking-tight`}>{subtitle}</p>}
             </div>
             {icon && (
-                <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800/50 text-emerald-500' : 'bg-slate-50 text-primary'}`}>
+                <div 
+                    className={`p-2 rounded-lg ${isDark ? 'bg-slate-800/50 text-emerald-500' : 'bg-slate-50 text-primary'}`}
+                    style={color ? { backgroundColor: `${color}10`, color } : {}}
+                >
                     {icon}
                 </div>
             )}

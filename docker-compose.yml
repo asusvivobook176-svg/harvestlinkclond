@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  harvestlink:
+    build: .
+    container_name: harvestlink-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./database:/app/database
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=your-production-secret-key-here
+    restart: always

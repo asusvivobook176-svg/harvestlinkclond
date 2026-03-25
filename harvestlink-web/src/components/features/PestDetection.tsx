@@ -138,13 +138,24 @@ export const PestDetection: React.FC = () => {
                                 </div>
 
                                 <div className="p-5 bg-rose-50 rounded-2xl border border-rose-100">
-                                    <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest mb-1.5 flex items-center gap-1"><AlertTriangle size={12} /> Chemical Treatment</p>
+                                    <div className="flex justify-between items-start mb-1.5">
+                                        <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest flex items-center gap-1"><AlertTriangle size={12} /> Chemical Treatment</p>
+                                        <button className="text-[10px] font-bold text-rose-600 hover:underline">Find Supplier</button>
+                                    </div>
                                     <p className="text-sm font-bold text-rose-900">{result.treatment}</p>
                                 </div>
 
                                 <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                    <p className="text-[10px] font-black uppercase text-emerald-500 tracking-widest mb-1.5 flex items-center gap-1"><Leaf size={12} /> Organic Alternative</p>
+                                    <div className="flex justify-between items-start mb-1.5">
+                                        <p className="text-[10px] font-black uppercase text-emerald-500 tracking-widest flex items-center gap-1"><Leaf size={12} /> Organic Alternative</p>
+                                        <button className="text-[10px] font-bold text-emerald-600 hover:underline">Find Supplier</button>
+                                    </div>
                                     <p className="text-sm font-bold text-emerald-900">{result.organic}</p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button className="flex-1 py-3 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50 transition-all">Save to History</button>
+                                    <button className="flex-1 py-3 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50 transition-all">Generate Report</button>
                                 </div>
                             </motion.div>
                         )}

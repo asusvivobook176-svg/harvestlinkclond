@@ -8,7 +8,7 @@ import {
     ArrowRight, Tag, Package,
     TrendingUp, CheckCircle2, Store
 } from "lucide-react";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency, formatDate, cn } from "../lib/utils";
 import { SkeletonCard } from "../components/shared/LoadingSpinner";
 import type { CropListing, DemandPost } from "../types";
 import { TN_DISTRICTS, TN_VEGETABLES } from "../types";
@@ -18,6 +18,8 @@ export default function Marketplace() {
     const { user, profile } = useAuth();
     const { t } = useTranslation();
     const [tab, setTab] = useState<"crops" | "demands">("crops");
+    const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
+    const [bulkMode, setBulkMode] = useState(false);
     const [listings, setListings] = useState<CropListing[]>([]);
     const [demands, setDemands] = useState<DemandPost[]>([]);
     const [loading, setLoading] = useState(true);
@@ -81,7 +83,7 @@ export default function Marketplace() {
                             </p>
                         </div>
 
-                        <div className="flex bg-white p-1 rounded-2xl border border-green-100 shadow-sm animate-fade-in-up delay-100">
+                        <div className="flex bg-white p-1 rounded-2xl border border-green-100 shadow-sm animate-fade-in-up delay-100 flex-wrap">
                             <button
                                 onClick={() => setTab("crops")}
                                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${tab === "crops" ? "bg-green-600 text-white shadow-md shadow-green-200" : "text-gray-500 hover:text-green-600"}`}
@@ -94,8 +96,41 @@ export default function Marketplace() {
                             >
                                 <Store className="w-4 h-4" /> {t("shop_dashboard.active_demands")}
                             </button>
+                            <div className="w-px h-8 bg-gray-100 mx-2 self-center hidden sm:block" />
+                            <button
+                                onClick={() => setViewMode(viewMode === "grid" ? "map" : "grid")}
+                                className={cn(
+                                    "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all border border-transparent",
+                                    viewMode === "map" ? "bg-blue-50 text-blue-600 border-blue-100" : "text-gray-500 hover:bg-gray-50"
+                                )}
+                            >
+                                <MapPin className="w-4 h-4" /> {viewMode === "map" ? "Grid View" : "Map View"}
+                            </button>
                         </div>
                     </div>
+
+                    {profile?.role === "shop" && (
+                        <div className="flex items-center justify-between bg-blue-600 p-4 rounded-3xl text-white shadow-lg shadow-blue-200 animate-fade-in-up">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Trader Advantage</p>
+                                    <h3 className="text-lg font-black">Enable Bulk Procurement Mode</h3>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setBulkMode(!bulkMode)}
+                                className={cn(
+                                    "px-6 py-2.5 rounded-xl font-bold transition-all",
+                                    bulkMode ? "bg-white text-blue-600" : "bg-blue-500 text-white border border-blue-400"
+                                )}
+                            >
+                                {bulkMode ? "Mode: Bulk (500kg+)" : "Mode: Standard"}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Filters Bar */}
                     <div className="card grid md:grid-cols-4 gap-4 p-4 animate-fade-in-up delay-200">
@@ -171,7 +206,10 @@ export default function Marketplace() {
                                                         <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
                                                             🌾
                                                         </div>
-                                                        <span className="badge badge-green">Available</span>
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className="badge badge-green">Available</span>
+                                                            {bulkMode && <span className="text-[10px] font-black text-blue-600 uppercase tracking-tight italic">Bulk Only</span>}
+                                                        </div>
                                                     </div>
                                                     <h3 className="text-xl font-black text-gray-900 mb-1">{l.crop_name}</h3>
                                                     <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-4">
@@ -216,9 +254,15 @@ export default function Marketplace() {
                                                         <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
                                                             🏪
                                                         </div>
-                                                        <span className={`badge ${d.urgency === 'High' ? 'badge-red' : 'badge-blue'}`}>
-                                                            {t("marketplace.urgency_label", { urgency: d.urgency })}
-                                                        </span>
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className={`badge ${d.urgency === 'High' ? 'badge-red' : 'badge-blue'}`}>
+                                                                {t("marketplace.urgency_label", { urgency: d.urgency })}
+                                                            </span>
+                                                            <div className="flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                                                                <CheckCircle2 className="w-3 h-3 text-blue-500" />
+                                                                <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Verified</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <h3 className="text-xl font-black text-gray-900 mb-1">{d.vegetable_name}</h3>
                                                     <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-4">

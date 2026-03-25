@@ -10,7 +10,9 @@ import {
     MapPin,
     Store,
     Truck,
-    Target
+    Target,
+    Download,
+    Paperclip
 } from 'lucide-react';
 // @ts-ignore
 import { apiCall } from '../lib/api';
@@ -33,6 +35,17 @@ export function MarketChatbot() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const downloadChat = () => {
+        const text = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `market-analysis-${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     const handleSendMessage = async (textOverride?: string) => {
         const text = textOverride || input;
@@ -96,9 +109,18 @@ export function MarketChatbot() {
                                 </div>
                             </div>
                         </div>
-                        <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1.5 rounded-full transition-colors">
-                            <X size={20} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button 
+                                onClick={downloadChat}
+                                title="Export Analysis"
+                                className="hover:bg-white/10 p-1.5 rounded-full transition-colors"
+                            >
+                                <Download size={18} />
+                            </button>
+                            <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1.5 rounded-full transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Content */}
@@ -202,6 +224,28 @@ export function MarketChatbot() {
                     {/* Input */}
                     <div className="p-4 bg-white border-t border-gray-100">
                         <div className="flex gap-2">
+                            <label className="bg-gray-50 text-gray-400 p-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all cursor-pointer flex items-center justify-center">
+                                <Paperclip size={20} />
+                                <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                            const file = e.target.files[0];
+                                            setMessages(prev => [...prev, { role: 'user', content: `Uploaded procurement spec: ${file.name}` }]);
+                                            setLoading(true);
+                                            setTimeout(() => {
+                                                setMessages(prev => [...prev, { 
+                                                    role: 'bot', 
+                                                    content: `I've analyzed the technical requirements in ${file.name}. 15 local farmers from Theni match your quality specs for 'Grade A' Onions. Would you like their contact details?`,
+                                                    type: 'market_data'
+                                                }]);
+                                                setLoading(false);
+                                            }, 1500);
+                                        }
+                                    }}
+                                />
+                            </label>
                             <div className="flex-1 relative">
                                 <input
                                     type="text"

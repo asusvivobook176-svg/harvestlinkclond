@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Pin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Event {
     date: number;
@@ -12,6 +13,7 @@ interface Event {
 }
 
 export const CropCalendar: React.FC = () => {
+    const { t } = useTranslation();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [events] = useState<Event[]>([
         { date: 15, month: currentDate.getMonth(), year: currentDate.getFullYear(), event: 'Plant Tomatoes', crop: 'Tomato', type: 'planting' },
@@ -46,9 +48,9 @@ export const CropCalendar: React.FC = () => {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                            <Calendar className="w-6 h-6 text-emerald-600" /> Crop Calendar
+                            <Calendar className="w-6 h-6 text-emerald-600" /> {t('crop_calendar.title', 'Crop Calendar')}
                         </h2>
-                        <p className="text-gray-500 text-sm mt-1">Manage your seasonal timeline and farm activities.</p>
+                        <p className="text-gray-500 text-sm mt-1">{t('crop_calendar.subtitle', 'Manage your seasonal timeline and farm activities.')}</p>
                     </div>
                     <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-200">
                         <button onClick={prevMonth} className="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-400 hover:text-emerald-600">

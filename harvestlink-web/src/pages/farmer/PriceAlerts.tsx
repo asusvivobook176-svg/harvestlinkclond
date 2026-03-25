@@ -22,6 +22,12 @@ export default function PriceAlerts() {
     const [history, setHistory] = useState<PriceAlert[]>([]);
     const [fetchingHistory, setFetchingHistory] = useState(true);
 
+    // Dynamic inputs instead of hardcoded
+    const [currentPrice, setCurrentPrice] = useState("30");
+    const [prevPrice, setPrevPrice] = useState("28");
+    const [supply, setSupply] = useState("1000");
+    const [demand, setDemand] = useState("800");
+
     const fetchHistory = async () => {
         setFetchingHistory(true);
         try {
@@ -45,10 +51,10 @@ export default function PriceAlerts() {
             const res = await getPriceCrashAlert({
                 vegetable_name: vegetable,
                 district,
-                current_price_rs: 30,
-                prev_week_price_rs: 28,
-                current_supply_kg: 1000,
-                current_demand_kg: 800,
+                current_price_rs: parseFloat(currentPrice) || 30,
+                prev_week_price_rs: parseFloat(prevPrice) || 28,
+                current_supply_kg: parseFloat(supply) || 1000,
+                current_demand_kg: parseFloat(demand) || 800,
                 month: new Date().getMonth() + 1,
                 festival_next_week: false
             });
@@ -145,6 +151,28 @@ export default function PriceAlerts() {
                                         <select className="input-field" value={district} onChange={e => setDistrict(e.target.value)}>
                                             {TN_DISTRICTS.map(d => <option key={d}>{d}</option>)}
                                         </select>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Current Price (₹/kg)</label>
+                                            <input type="number" className="input-field" value={currentPrice} onChange={e => setCurrentPrice(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Prev Week Price (₹/kg)</label>
+                                            <input type="number" className="input-field" value={prevPrice} onChange={e => setPrevPrice(e.target.value)} />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Supply Volume (kg)</label>
+                                            <input type="number" className="input-field" value={supply} onChange={e => setSupply(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Demand Volume (kg)</label>
+                                            <input type="number" className="input-field" value={demand} onChange={e => setDemand(e.target.value)} />
+                                        </div>
                                     </div>
 
                                     <button

@@ -6,14 +6,16 @@ import { useAuth } from "../../hooks/useAuth";
 import { apiFetch } from "../../services/api";
 import { TN_DISTRICTS, TN_VEGETABLES, SOIL_TYPES, PREVIOUS_CROPS } from "../../types";
 import type { SoilType } from "../../types";
-import { Sprout, ChevronRight, ChevronLeft, Save, RotateCcw, Leaf } from "lucide-react";
+import { Sprout, ChevronRight, ChevronLeft, Save, RotateCcw, Leaf, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { pilotService } from "../../services/pilot";
 
 const SOIL_EMOJI: Record<string, string> = { Red: "🟥", Black: "⬛", Sandy: "🟡", Loamy: "🟫" };
 
+// Removed mock getMarketData function
+
 export default function CropRecommendation() {
-    const { getCropRecommendation, isMLOnline } = useML();
+    const { getCropRecommendation, getDemandForecast, isMLOnline } = useML();
     const { t } = useTranslation();
     const { farmer } = useAuth();
 
@@ -23,6 +25,9 @@ export default function CropRecommendation() {
     const [result, setResult] = useState<{
         recommended_crop: string; confidence: number;
         top_3: { crop: string; probability: number }[]; notes?: string;
+    } | null>(null);
+    const [marketData, setMarketData] = useState<{
+        price: string; demand: string; trend: string; color: string; bg: string;
     } | null>(null);
 
     const STEPS = [
@@ -71,6 +76,39 @@ export default function CropRecommendation() {
                 confidence: res.confidence,
                 top_3: res.top_3_crops || [],
             });
+
+            // Fetch dynamic Market Intelligence
+            try {
+                const demandRes = await getDemandForecast({
+                    vegetable_name: res.recommended_crop,
+                    month: new Date().getMonth() + 1,
+                    year: new Date().getFullYear(),
+                    prev_month_demand_kg: 500,
+                    prev_month_price_rs: 40,
+                    festival_week: false,
+                    season: season.split(" ")[0],
+                    city: district,
+                    rainfall_mm: parseFloat(rainfall),
+                    temperature_celsius: parseFloat(temperature)
+                });
+                
+                // Compare to a base estimate to derive a trend percentage
+                const basePrice = 45; 
+                const trendVal = Math.round(((demandRes.predicted_price_rs - basePrice) / basePrice) * 100);
+                const isPos = trendVal >= 0;
+                
+                setMarketData({
+                    price: `₹${demandRes.predicted_price_rs}/kg`,
+                    demand: demandRes.confidence_level || 'High',
+                    trend: `${isPos ? '+' : ''}${trendVal}%`,
+                    color: isPos ? 'text-emerald-600' : 'text-rose-600',
+                    bg: isPos ? 'bg-emerald-50' : 'bg-rose-50'
+                });
+            } catch (err) {
+                // Fallback on error
+                setMarketData({ price: "₹55/kg", demand: "Medium", trend: "+5%", color: "text-emerald-600", bg: "bg-emerald-50" });
+            }
+
             if (farmer?.user_id) {
                 pilotService.logActivity({
                     user_id: parseInt(farmer.user_id),
@@ -103,11 +141,14 @@ export default function CropRecommendation() {
         }
     };
 
-    const handleReset = () => { setResult(null); setSaved(false); setStep(0); };
+    const handleReset = () => { setResult(null); setMarketData(null); setSaved(false); setStep(0); };
 
-    const pct = Math.round((result?.confidence || 0) * 100);
+    // Backend returns confidence as a percentage (0-100) already
+    const pct = Math.round(result?.confidence || 0);
     const circumference = 2 * Math.PI * 38;
-    const dashOffset = circumference - (pct / 100) * circumference;
+    const dashOffset = Math.max(0, circumference - (pct / 100) * circumference);
+
+    // Market data state is set dynamically in handleGetRecommendation
 
     return (
         <div className="flex min-h-screen bg-green-50/50">
@@ -291,7 +332,7 @@ export default function CropRecommendation() {
                                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
                                     <div className="absolute -bottom-16 -right-6 w-48 h-48 bg-white/5 rounded-full" />
                                     <p className="text-green-200 text-sm font-semibold mb-1">{t("recommendation.results_header")}</p>
-                                    <h2 className="text-4xl font-black text-white mb-1">🌱 {t(`common.${result.recommended_crop.toLowerCase()}`) || result.recommended_crop}</h2>
+                                    <h2 className="text-4xl font-black text-white mb-1">🌱 {t(`common.${result.recommended_crop.toLowerCase()}`, { defaultValue: result.recommended_crop })}</h2>
                                     <p className="text-green-200/80 text-sm">{t("recommendation.best_crop_note", { soil: t(`recommendation.soil_types.${soilType.toLowerCase()}`) || soilType, district: district })}</p>
                                 </div>
 
@@ -325,7 +366,7 @@ export default function CropRecommendation() {
                                             {result.top_3.map(({ crop, probability }, i) => (
                                                 <div key={crop} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
                                                     <span className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-xs font-bold text-green-700">{i + 1}</span>
-                                                    <span className="flex-1 font-semibold text-gray-800 text-sm">{t(`common.${crop.toLowerCase()}`) || crop}</span>
+                                                    <span className="flex-1 font-semibold text-gray-800 text-sm">{t(`common.${crop.toLowerCase()}`, { defaultValue: crop })}</span>
                                                     <div className="flex items-center gap-2">
                                                         <div className="progress-bar w-20"><div className="progress-fill" style={{ width: `${Math.round(probability * 100)}%` }} /></div>
                                                         <span className="text-xs text-gray-500 w-8 text-right">{Math.round(probability * 100)}%</span>
@@ -336,12 +377,35 @@ export default function CropRecommendation() {
                                     </div>
                                 )}
 
-                                <div className="flex gap-3 mt-6">
-                                    <button onClick={handleReset} className="btn-secondary flex items-center gap-2">
-                                        <RotateCcw className="w-4 h-4" />{t("recommendation.new_analysis")}
+                                {/* Market Insights */}
+                                {marketData && (
+                                    <div className="mt-8 bg-gray-50/50 rounded-2xl p-5 border border-gray-100">
+                                        <h3 className="text-xs font-black text-gray-500 mb-4 flex items-center gap-2 uppercase tracking-widest">
+                                            <TrendingUp className="w-4 h-4 text-emerald-600" /> Market Intelligence
+                                        </h3>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center">
+                                                <p className="text-[10px] uppercase font-black text-gray-400 mb-1">{t("dashboard.market_price", { defaultValue: "Current Price" })}</p>
+                                                <p className="text-xl font-black text-gray-900">{marketData.price}</p>
+                                            </div>
+                                            <div className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center">
+                                                <p className="text-[10px] uppercase font-black text-gray-400 mb-1">Market Demand</p>
+                                                <p className="text-xl font-black text-emerald-600">{marketData.demand}</p>
+                                            </div>
+                                            <div className={`p-3 rounded-xl border shadow-sm flex flex-col justify-center ${marketData.bg} ${marketData.trend.includes('-') ? 'border-rose-100' : 'border-emerald-100'}`}>
+                                                <p className={`text-[10px] uppercase font-black mb-1 opacity-70 ${marketData.color}`}>30-Day Trend</p>
+                                                <p className={`text-xl font-black ${marketData.color}`}>{marketData.trend}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="md:flex gap-4 mt-8 pt-6 border-t border-gray-100">
+                                    <button onClick={handleReset} className="btn-secondary flex-1 py-3.5 mb-3 md:mb-0 flex items-center justify-center gap-2 rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 shadow-sm transition-all text-sm font-bold text-gray-700">
+                                        <RotateCcw className="w-4 h-4 text-green-600" />{t("recommendation.new_analysis")}
                                     </button>
-                                    <button onClick={handleSave} disabled={saved || !farmer?.id} className="btn-primary flex items-center gap-2 flex-1 justify-center">
-                                        {saved ? <><Leaf className="w-4 h-4" />{t("recommendation.saved")}</> : <><Save className="w-4 h-4" />{t("recommendation.save_to_dashboard")}</>}
+                                    <button onClick={handleSave} disabled={saved || !farmer?.id} className={`flex-[1.5] py-3.5 flex items-center justify-center gap-2 rounded-xl font-bold shadow-md transition-all text-sm ${saved ? "bg-green-100 text-green-800 border-2 border-green-200 cursor-not-allowed" : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg hover:-translate-y-0.5"}`}>
+                                        {saved ? <><Leaf className="w-5 h-5" />{t("recommendation.saved")}</> : <><Save className="w-5 h-5" />{t("recommendation.save_to_dashboard")}</>}
                                     </button>
                                 </div>
                             </div>

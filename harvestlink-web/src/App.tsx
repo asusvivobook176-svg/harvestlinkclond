@@ -22,11 +22,26 @@ import ShopDashboard from "./pages/shop/Dashboard";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
 import FarmerFeedback from "./pages/farmer/Feedback";
+// import MyCrops from "./pages/farmer/MyCrops";
+// import MarketIntelligence from "./pages/farmer/MarketIntelligence";
+import MyDemands from "./pages/shop/MyDemands";
+import Transactions from "./pages/shop/Transactions";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import UserManagement from "./pages/admin/UserManagement";
+import SupportManagement from "./pages/admin/SupportManagement";
+import PilotDashboard from "./pages/admin/PilotDashboard";
+import PilotMonitoring from "./pages/admin/PilotMonitoring";
+import MLMonitor from "./pages/admin/MLMonitor";
 
 // Lazily loaded pages
-const PilotDashboard = lazy(() => import("./pages/admin/PilotDashboard"));
-const PilotMonitoring = lazy(() => import("./pages/admin/PilotMonitoring"));
 const TrainingPortal = lazy(() => import("./pages/farmer/TrainingPortal"));
+const MyCrops = lazy(() => import("./pages/farmer/MyCrops"));
+const MarketIntelligence = lazy(() => import("./pages/farmer/MarketIntelligence"));
+const WeatherIntelligence = lazy(() => import("./pages/farmer/WeatherIntelligence"));
+const AITools = lazy(() => import("./pages/farmer/AITools"));
+const CommunityHub = lazy(() => import("./pages/farmer/CommunityHub"));
+const CropCalendar = lazy(() => import("./pages/farmer/CropCalendar"));
+const SoilAnalysis = lazy(() => import("./pages/farmer/SoilAnalysis"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
 // Auth guard component
@@ -86,19 +101,31 @@ function AppInner() {
           <Route path="/marketplace" element={<Marketplace />} />
 
           {/* Farmer Routes */}
+          <Route path="/feedback" element={<ProtectedRoute allowedRoles={["farmer"]}><CommunityHub /></ProtectedRoute>} />
           <Route path="/farmer/dashboard" element={<ProtectedRoute allowedRoles={["farmer"]}><FarmerDashboard /></ProtectedRoute>} />
           <Route path="/farmer/recommend" element={<ProtectedRoute allowedRoles={["farmer"]}><CropRecommendation /></ProtectedRoute>} />
           <Route path="/farmer/alerts" element={<ProtectedRoute allowedRoles={["farmer"]}><PriceAlerts /></ProtectedRoute>} />
           <Route path="/farmer/spoilage" element={<ProtectedRoute allowedRoles={["farmer"]}><SpoilageChecker /></ProtectedRoute>} />
-          <Route path="/farmer/crops" element={<ProtectedRoute allowedRoles={["farmer"]}><Marketplace /></ProtectedRoute>} />
+          <Route path="/farmer/crops" element={<ProtectedRoute allowedRoles={["farmer"]}><MyCrops /></ProtectedRoute>} />
+          <Route path="/farmer/intelligence" element={<ProtectedRoute allowedRoles={["farmer"]}><MarketIntelligence /></ProtectedRoute>} />
+          <Route path="/farmer/weather" element={<ProtectedRoute allowedRoles={["farmer"]}><WeatherIntelligence /></ProtectedRoute>} />
+          <Route path="/farmer/ai-tools" element={<ProtectedRoute allowedRoles={["farmer"]}><AITools /></ProtectedRoute>} />
           <Route path="/farmer/training" element={<ProtectedRoute allowedRoles={["farmer"]}><TrainingPortal /></ProtectedRoute>} />
+          <Route path="/farmer/calendar" element={<ProtectedRoute allowedRoles={["farmer"]}><CropCalendar /></ProtectedRoute>} />
+          <Route path="/farmer/soil-lab" element={<ProtectedRoute allowedRoles={["farmer"]}><SoilAnalysis /></ProtectedRoute>} />
 
           {/* Shop Routes */}
           <Route path="/shop/dashboard" element={<ProtectedRoute allowedRoles={["shop"]}><ShopDashboard /></ProtectedRoute>} />
-          <Route path="/shop/demands" element={<ProtectedRoute allowedRoles={["shop"]}><Marketplace /></ProtectedRoute>} />
+          <Route path="/shop/demands" element={<ProtectedRoute allowedRoles={["shop"]}><MyDemands /></ProtectedRoute>} />
+          <Route path="/shop/transactions" element={<ProtectedRoute allowedRoles={["shop"]}><Transactions /></ProtectedRoute>} />
           <Route path="/shop/forecast" element={<ProtectedRoute allowedRoles={["shop"]}><ShopDashboard /></ProtectedRoute>} />
 
           {/* Admin Routes */}
+          <Route path="/admin" element={<Navigate to="/admin/analytics" replace />} />
+          <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles={["admin"]}><AdminAnalytics /></ProtectedRoute>} />
+          <Route path="/admin/ml-monitor" element={<ProtectedRoute allowedRoles={["admin"]}><MLMonitor /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin"]}><UserManagement /></ProtectedRoute>} />
+          <Route path="/admin/support" element={<ProtectedRoute allowedRoles={["admin"]}><SupportManagement /></ProtectedRoute>} />
           <Route path="/admin/pilot" element={<ProtectedRoute allowedRoles={["admin"]}><PilotMonitoring /></ProtectedRoute>} />
           <Route path="/admin/command" element={<ProtectedRoute allowedRoles={["admin"]}><PilotDashboard /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminSettings /></ProtectedRoute>} />

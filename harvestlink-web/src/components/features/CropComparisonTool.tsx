@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface Crop {
     name: string;
@@ -46,6 +47,7 @@ const allCrops: Crop[] = [
 ];
 
 export const CropComparisonTool: React.FC = () => {
+    const { t } = useTranslation();
     const [selectedCrops, setSelectedCrops] = useState<Crop[]>([]);
 
     const handleCropSelection = (crop: Crop) => {
@@ -61,9 +63,9 @@ export const CropComparisonTool: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             <div className="p-8">
                 <h2 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="text-emerald-600">🔍</span> Compare Strategic Crops
+                    <span className="text-emerald-600">🔍</span> {t('crop_compare.title', 'Compare Strategic Crops')}
                 </h2>
-                <p className="text-gray-500 text-sm mb-6">Compare yields, profits, and risk levels to make informed planting decisions.</p>
+                <p className="text-gray-500 text-sm mb-6">{t('crop_compare.subtitle', 'Compare yields, profits, and risk levels to make informed planting decisions.')}</p>
 
                 {/* Crop Selection */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

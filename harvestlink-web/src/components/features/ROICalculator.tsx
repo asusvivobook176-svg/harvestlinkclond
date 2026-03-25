@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface ROIInputs {
     initialInvestment: number;
@@ -17,6 +18,7 @@ interface ROIResults {
 }
 
 export const ROICalculator: React.FC = () => {
+    const { t } = useTranslation();
     const [inputs, setInputs] = useState<ROIInputs>({
         initialInvestment: 50000,
         cropYield: 500,
@@ -54,9 +56,9 @@ export const ROICalculator: React.FC = () => {
         >
             <div className="p-8">
                 <h2 className="text-2xl font-black mb-2 flex items-center gap-2">
-                    <span className="text-emerald-400">💰</span> Agricultural ROI Calculator
+                    <span className="text-emerald-400">💰</span> {t('roi.title', 'Agricultural ROI Calculator')}
                 </h2>
-                <p className="text-emerald-300/60 text-sm mb-8">Calculate your expected returns and plan your investments with precision.</p>
+                <p className="text-emerald-300/60 text-sm mb-8">{t('roi.subtitle', 'Calculate your expected returns and plan your investments with precision.')}</p>
 
                 <div className="grid md:grid-cols-2 gap-10">
                     {/* Inputs Section */}
